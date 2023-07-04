@@ -1,11 +1,7 @@
 from pro_filer.actions.main_actions import show_disk_usage  # NOQA
-import json
 from pro_filer.cli_helpers import _get_printable_file_path
 
-
-def generate_output(content, path):
-    with open(path, "w", encoding="utf-8") as file:
-        file.write(json.dumps(content))
+# tmp_path --> https://docs.pytest.org/en/7.1.x/how-to/tmp_path.html
 
 
 def test_show_disk_usage_without_files(capsys):
@@ -16,17 +12,14 @@ def test_show_disk_usage_without_files(capsys):
 
 
 def test_show_disk_usage_files(tmp_path, capsys):
-    content_one = {"esporte": "futebol"}
-    constent_two = {
-        "esporte": "futebol",
-        "comida": "sorvete",
-        "filme": "interestelar",
-    }
-    output_path_one = tmp_path / "one.json"
-    output_path_two = tmp_path / "two.json"
-
-    generate_output(content_one, output_path_one)
-    generate_output(constent_two, output_path_two)
+    content_one = "Sorvete para sobremesa"
+    content_two = "Olá"
+    output_path_one = tmp_path / "one.txt"
+    output_path_two = tmp_path / "two.txt"
+    output_path_one.touch()
+    output_path_one.write_text(content_one)
+    output_path_two.touch()
+    output_path_two.write_text(content_two)
 
     context = {"all_files": [str(output_path_one), str(output_path_two)]}
 
@@ -40,6 +33,6 @@ def test_show_disk_usage_files(tmp_path, capsys):
     captured = capsys.readouterr()
     assert (
         captured.out
-        == f"{output_two} 68 (75%)\n\
-{output_one} 22 (24%)\nTotal size: 90\n"
+        == f"{output_one} 22 (84%)\n\
+{output_two} 4 (15%)\nTotal size: 26\n"
     )
