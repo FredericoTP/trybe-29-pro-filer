@@ -5,7 +5,11 @@ def show_deepest_file(context):
     if not context["all_files"]:
         print("No files found")
     else:
-        deepest_file = max(context["all_files"], key=len)
+        deepest_file = context["all_files"][0]
+        for file in context["all_files"]:
+            if len(file.split("/")) > len(deepest_file.split("/")):
+                deepest_file = file
+        # deepest_file = max(context["all_files"], key=len)
         print(f"Deepest file: {deepest_file}")
 
 
